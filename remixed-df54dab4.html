@@ -1,0 +1,2703 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <title>Chapter Tracker — The Rankers Academy</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        background: #000;
+        color: #f5edd8;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        min-height: 100vh;
+        padding-bottom: 86px;
+      }
+      :root {
+        --card: #0d0800;
+        --card2: #130b03;
+        --border: #3a2008;
+        --gold: #d4900a;
+        --gold2: #f0a820;
+        --golddim: #7a5508;
+        --white: #f5edd8;
+        --muted: #8a7055;
+        --muted2: #5a4025;
+        --c-done: #0d2a0d;
+        --c-done-b: #2e7d32;
+        --c-done-t: #66bb6a;
+        --c-prog: #221800;
+        --c-prog-b: #e65100;
+        --c-prog-t: #ffa040;
+        --c-rev: #080f22;
+        --c-rev-b: #1255a0;
+        --c-rev-t: #42a5f5;
+        --c-not: #0d0800;
+        --c-not-b: #3a2008;
+        --c-not-t: #6a5035;
+        --phy-c: #4a9ecc;
+        --phy-bg: #03101c;
+        --phy-b: #1a5070;
+        --chem-c: #5abf7a;
+        --chem-bg: #031508;
+        --chem-b: #1a6030;
+        --bio-c: #b06ae0;
+        --bio-bg: #100618;
+        --bio-b: #5a2880;
+        --math-c: #f0a820;
+        --math-bg: #160c00;
+        --math-b: #7a5508;
+        --sst-c: #e07050;
+        --sst-bg: #160a06;
+        --sst-b: #703018;
+        --eng-c: #70c0a0;
+        --eng-bg: #061410;
+        --eng-b: #206040;
+        --red: #c03020;
+        --redbg: #1a0404;
+      }
+      /* ── LOGIN ── */
+      #login-screen {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        z-index: 9000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        overflow-y: auto;
+      }
+      #login-screen.hidden {
+        display: none;
+      }
+      .login-box {
+        width: 100%;
+        max-width: 380px;
+      }
+      .login-eye {
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        color: var(--gold);
+        text-transform: uppercase;
+        text-align: center;
+        margin-bottom: 5px;
+      }
+      .login-title {
+        font-size: 26px;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        text-align: center;
+        margin-bottom: 3px;
+      }
+      .login-title span {
+        color: var(--gold2);
+      }
+      .login-sub {
+        font-size: 11px;
+        color: var(--muted);
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      .login-card {
+        background: var(--card);
+        border: 1.5px solid var(--border);
+        border-radius: 16px;
+        padding: 20px 18px;
+      }
+      .login-err {
+        font-size: 11px;
+        color: #ef5350;
+        text-align: center;
+        margin-bottom: 10px;
+        min-height: 16px;
+        font-weight: 700;
+      }
+      .user-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+        margin-bottom: 14px;
+      }
+      .u-btn {
+        padding: 9px 6px;
+        border-radius: 10px;
+        border: 1.5px solid var(--border);
+        background: var(--card2);
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        text-align: center;
+        transition: all 0.15s;
+        line-height: 1.3;
+      }
+      .u-btn.sel {
+        border-color: var(--gold2);
+        background: #1a0e00;
+        color: var(--gold2);
+      }
+      .u-btn.adm {
+        grid-column: 1/-1;
+        border-color: var(--golddim);
+        color: var(--gold);
+        font-size: 11px;
+      }
+      .login-btn {
+        width: 100%;
+        padding: 13px;
+        border-radius: 10px;
+        border: none;
+        background: var(--gold2);
+        color: #000;
+        font-size: 14px;
+        font-weight: 900;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 4px;
+      }
+      /* ── Header ── */
+      .hdr {
+        background: #000;
+        padding: 14px 14px 10px;
+        border-bottom: 1.5px solid var(--border);
+        position: sticky;
+        top: 0;
+        z-index: 300;
+      }
+      .hdr-eye {
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        color: var(--gold);
+        text-transform: uppercase;
+        margin-bottom: 2px;
+      }
+      .hdr-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .hdr-title {
+        font-size: 19px;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+      }
+      .hdr-title span {
+        color: var(--gold2);
+      }
+      .hdr-sub {
+        font-size: 9px;
+        color: var(--muted);
+        margin-top: 1px;
+      }
+      .ubadge {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        background: var(--card2);
+        border: 1.5px solid var(--border);
+        border-radius: 20px;
+        padding: 5px 11px;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      .ubadge-name {
+        font-size: 9px;
+        font-weight: 800;
+      }
+      .ubadge-role {
+        font-size: 7px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      /* ── Toast ── */
+      #toast {
+        position: fixed;
+        top: 14px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-70px);
+        background: var(--gold2);
+        color: #000;
+        padding: 8px 20px;
+        border-radius: 24px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        z-index: 9999;
+        transition: transform 0.25s;
+        white-space: nowrap;
+        box-shadow: 0 4px 20px rgba(240, 168, 32, 0.45);
+      }
+      #toast.show {
+        transform: translateX(-50%) translateY(0);
+      }
+      /* ── Nav ── */
+      .bnav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #000;
+        border-top: 1.5px solid var(--border);
+        display: flex;
+        justify-content: space-around;
+        padding: 8px 0 13px;
+        z-index: 200;
+      }
+      .nb {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px 6px;
+        color: var(--muted);
+        font-family: inherit;
+        transition: color 0.15s;
+      }
+      .nb.active {
+        color: var(--gold2);
+      }
+      .ni {
+        font-size: 16px;
+      }
+      .nl {
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      /* ── Layout ── */
+      .wrap {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 13px 13px;
+        background: #000;
+      }
+      .tab {
+        display: none;
+      }
+      .tab.active {
+        display: block;
+      }
+      .hscroll {
+        display: flex;
+        gap: 7px;
+        overflow-x: auto;
+        margin-bottom: 12px;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+      }
+      .hscroll::-webkit-scrollbar {
+        display: none;
+      }
+      /* ── Pills ── */
+      .pill {
+        flex-shrink: 0;
+        padding: 6px 13px;
+        border-radius: 20px;
+        border: 1.5px solid var(--border);
+        background: var(--card2);
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        white-space: nowrap;
+        transition: all 0.15s;
+      }
+      .pill.on {
+        border-color: var(--gold2);
+        background: #1a0e00;
+        color: var(--gold2);
+      }
+      /* ── Class toggle ── */
+      .cls-toggle {
+        display: flex;
+        gap: 0;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 12px;
+        width: fit-content;
+      }
+      .cls-btn {
+        padding: 7px 18px;
+        border: none;
+        background: var(--card2);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.15s;
+      }
+      .cls-btn.on {
+        background: var(--gold2);
+        color: #000;
+      }
+      /* ── Subject tabs ── */
+      .stabs {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+      }
+      .stab {
+        padding: 7px 12px;
+        border-radius: 10px;
+        border: 1.5px solid var(--border);
+        background: var(--card2);
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: inherit;
+        text-align: center;
+        line-height: 1.3;
+      }
+      .stab.phy.on {
+        border-color: var(--phy-b);
+        background: var(--phy-bg);
+        color: var(--phy-c);
+      }
+      .stab.chem.on {
+        border-color: var(--chem-b);
+        background: var(--chem-bg);
+        color: var(--chem-c);
+      }
+      .stab.bio.on {
+        border-color: var(--bio-b);
+        background: var(--bio-bg);
+        color: var(--bio-c);
+      }
+      .stab.math.on {
+        border-color: var(--math-b);
+        background: var(--math-bg);
+        color: var(--math-c);
+      }
+      .stab.sst.on {
+        border-color: var(--sst-b);
+        background: var(--sst-bg);
+        color: var(--sst-c);
+      }
+      .stab.eng.on {
+        border-color: var(--eng-b);
+        background: var(--eng-bg);
+        color: var(--eng-c);
+      }
+      /* ── Chapter cards ── */
+      .ch {
+        border-radius: 12px;
+        border: 2px solid;
+        margin-bottom: 8px;
+        overflow: hidden;
+        cursor: pointer;
+      }
+      .ch.st-completed {
+        background: var(--c-done);
+        border-color: var(--c-done-b);
+      }
+      .ch.st-in-progress {
+        background: var(--c-prog);
+        border-color: var(--c-prog-b);
+      }
+      .ch.st-revision {
+        background: var(--c-rev);
+        border-color: var(--c-rev-b);
+      }
+      .ch.st-not-started {
+        background: var(--c-not);
+        border-color: var(--c-not-b);
+      }
+      .ch-inner {
+        padding: 11px 13px;
+      }
+      .ch-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .ch-num {
+        font-size: 9px;
+        font-weight: 800;
+        color: var(--muted);
+        margin-bottom: 3px;
+      }
+      .ch-name {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--white);
+        line-height: 1.35;
+      }
+      .ch-name.done {
+        color: #4a7a4a;
+        text-decoration: line-through;
+      }
+      .sp {
+        flex-shrink: 0;
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        border-radius: 16px;
+        margin-top: 2px;
+      }
+      .sp-completed {
+        background: rgba(46, 125, 50, 0.3);
+        color: var(--c-done-t);
+        border: 1px solid var(--c-done-b);
+      }
+      .sp-in-progress {
+        background: rgba(230, 81, 0, 0.2);
+        color: var(--c-prog-t);
+        border: 1px solid var(--c-prog-b);
+      }
+      .sp-revision {
+        background: rgba(18, 85, 160, 0.2);
+        color: var(--c-rev-t);
+        border: 1px solid var(--c-rev-b);
+      }
+      .sp-not-started {
+        background: rgba(58, 32, 8, 0.3);
+        color: var(--muted);
+        border: 1px solid var(--border);
+      }
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 6px;
+      }
+      .mc {
+        font-size: 10px;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 3px;
+      }
+      .mc b {
+        color: var(--white);
+        font-weight: 600;
+      }
+      .pt {
+        height: 3px;
+        background: rgba(255, 255, 255, 0.07);
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 7px 0 3px;
+      }
+      .pf {
+        height: 100%;
+        border-radius: 4px;
+      }
+      .pf.phy {
+        background: var(--phy-c);
+      }
+      .pf.chem {
+        background: var(--chem-c);
+      }
+      .pf.bio {
+        background: var(--bio-c);
+      }
+      .pf.math {
+        background: var(--math-c);
+      }
+      .pf.sst {
+        background: var(--sst-c);
+      }
+      .pf.eng {
+        background: var(--eng-c);
+      }
+      .pl {
+        font-size: 9px;
+        color: var(--muted);
+      }
+      /* ── Chapter expand detail ── */
+      .ch-det {
+        padding: 12px 13px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .fl {
+        font-size: 9px;
+        font-weight: 800;
+        color: var(--gold);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 3px;
+      }
+      .fv {
+        font-size: 12px;
+        color: var(--white);
+        line-height: 1.6;
+        margin-bottom: 10px;
+      }
+      /* ── Buttons ── */
+      .btn-g {
+        padding: 8px 15px;
+        border-radius: 20px;
+        border: 1.5px solid var(--gold2);
+        background: var(--gold2);
+        color: #000;
+        font-size: 11px;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .btn-gh {
+        padding: 7px 13px;
+        border-radius: 20px;
+        border: 1.5px solid var(--border);
+        background: var(--card2);
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .bsm {
+        padding: 5px 10px;
+        border-radius: 8px;
+        border: 1.5px solid var(--border);
+        background: var(--card2);
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        white-space: nowrap;
+      }
+      .bsm.on {
+        border-color: var(--gold);
+        color: var(--gold);
+        background: #160c00;
+      }
+      .bdel {
+        font-size: 10px;
+        color: var(--red);
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-weight: 800;
+        font-family: inherit;
+        letter-spacing: 0.04em;
+        margin-left: auto;
+      }
+      .btn-mark {
+        width: 100%;
+        padding: 11px;
+        border-radius: 10px;
+        border: 2px solid var(--c-done-b);
+        background: var(--c-done);
+        color: var(--c-done-t);
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: inherit;
+        margin-bottom: 8px;
+      }
+      /* ── Inputs ── */
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 9px;
+        border: 1.5px solid var(--border);
+        background: #000;
+        color: var(--white);
+        font-size: 13px;
+        font-family: inherit;
+        outline: none;
+        margin-bottom: 9px;
+        color-scheme: dark;
+        appearance: none;
+      }
+      select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%238A7055' d='M5 7L0 2h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 11px center;
+        padding-right: 28px;
+      }
+      input::placeholder,
+      textarea::placeholder {
+        color: var(--muted2);
+      }
+      input:focus,
+      textarea:focus,
+      select:focus {
+        border-color: var(--golddim);
+      }
+      .ilbl {
+        font-size: 9px;
+        font-weight: 800;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 4px;
+      }
+      .frow {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+      }
+      .fcard {
+        background: var(--card);
+        border: 1.5px solid var(--border);
+        border-radius: 13px;
+        padding: 14px;
+        margin-bottom: 14px;
+      }
+      .ftitle {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--white);
+        margin-bottom: 12px;
+      }
+      /* ── View header ── */
+      .vh {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 13px;
+      }
+      .vt {
+        font-size: 17px;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+      }
+      /* ── Summary grid ── */
+      .sg {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .sc {
+        background: var(--card2);
+        border: 1.5px solid var(--border);
+        border-radius: 11px;
+        padding: 10px 6px;
+        text-align: center;
+      }
+      .sv {
+        font-size: 20px;
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        margin-bottom: 1px;
+      }
+      .sl {
+        font-size: 8px;
+        font-weight: 800;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      /* ── Legend ── */
+      .leg {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .li {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 9px;
+        font-weight: 700;
+      }
+      .ld {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      /* ── Dash card ── */
+      .dbc {
+        background: var(--card);
+        border: 1.5px solid var(--border);
+        border-radius: 13px;
+        padding: 13px 14px;
+        margin-bottom: 9px;
+        cursor: pointer;
+      }
+      .dbc-chips {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+      }
+      .dcc {
+        font-size: 9px;
+        font-weight: 800;
+        padding: 3px 9px;
+        border-radius: 20px;
+        border: 1px solid transparent;
+        white-space: nowrap;
+      }
+      /* ── Class badge ── */
+      .cb {
+        display: inline-flex;
+        align-items: center;
+        font-size: 9px;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        background: var(--card2);
+      }
+      .cb.c11 {
+        border-color: #5a8ab0;
+        color: #8abcdc;
+        background: #040c14;
+      }
+      .cb.c12 {
+        border-color: #b08040;
+        color: #dca870;
+        background: #140c00;
+      }
+      /* ── Search ── */
+      .sbar {
+        position: relative;
+        margin-bottom: 10px;
+      }
+      .sbar input {
+        padding-left: 30px;
+        margin-bottom: 0;
+      }
+      .sbar::before {
+        content: "🔍";
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 11px;
+        z-index: 1;
+      }
+      .slbl {
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        margin-top: 4px;
+      }
+      /* ── Class Log ── */
+      .fac-card {
+        background: var(--card);
+        border: 1.5px solid var(--border);
+        border-radius: 13px;
+        overflow: hidden;
+        margin-bottom: 10px;
+      }
+      .fac-hdr {
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+      }
+      .fac-nm {
+        font-weight: 800;
+        font-size: 14px;
+      }
+      .fac-sj {
+        font-size: 10px;
+        font-weight: 700;
+        margin-top: 2px;
+      }
+      .log-entry {
+        padding: 11px 14px;
+        border-top: 1px solid var(--border);
+        background: var(--card2);
+      }
+      .log-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+      .log-cn {
+        font-weight: 700;
+        font-size: 13px;
+        color: var(--white);
+      }
+      .log-db {
+        font-size: 9px;
+        font-weight: 800;
+        color: var(--gold2);
+        background: #1a0e00;
+        border: 1px solid var(--golddim);
+        padding: 2px 8px;
+        border-radius: 12px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .log-fl {
+        font-size: 9px;
+        font-weight: 800;
+        color: var(--gold);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 2px;
+      }
+      .log-fv {
+        font-size: 12px;
+        color: var(--white);
+        line-height: 1.5;
+      }
+      .log-hw {
+        font-size: 11px;
+        color: var(--c-prog-t);
+        font-weight: 700;
+        background: var(--c-prog);
+        border: 1px solid var(--c-prog-b);
+        padding: 4px 10px;
+        border-radius: 8px;
+        display: inline-block;
+        margin-top: 3px;
+      }
+      .att-ok {
+        font-size: 9px;
+        font-weight: 800;
+        padding: 3px 10px;
+        border-radius: 20px;
+        background: var(--c-done);
+        color: var(--c-done-t);
+        border: 1px solid var(--c-done-b);
+      }
+      .cl-form {
+        padding: 14px;
+        border-top: 1px solid var(--border);
+        background: #000;
+      }
+      /* ── Update log ── */
+      .ue {
+        padding: 9px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .ue:last-child {
+        border-bottom: none;
+      }
+      /* ── Empty ── */
+      .empty {
+        text-align: center;
+        color: var(--muted);
+        font-size: 13px;
+        padding: 40px 20px;
+        line-height: 1.7;
+      }
+      .st-row {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      @media (max-width: 480px) {
+        .frow {
+          grid-template-columns: 1fr;
+        }
+        .sg {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══ LOGIN SCREEN ════════════════════════════════════════════ -->
+    <div id="login-screen">
+      <div class="login-box">
+        <div class="login-eye">THE RANKERS ACADEMY · NAGPUR</div>
+        <div class="login-title">Chapter <span>Tracker</span></div>
+        <div class="login-sub">Faculty Portal — Sign In</div>
+        <div class="login-card">
+          <div id="lerr" class="login-err"></div>
+          <div class="ilbl" style="margin-bottom: 8px">Select your name</div>
+          <div class="user-grid" id="ugrid"></div>
+          <div class="ilbl" style="margin-bottom: 6px">Password</div>
+          <input
+            type="password"
+            id="lpwd"
+            placeholder="Enter your password"
+            style="margin-bottom: 12px"
+            onkeydown="if (event.key === 'Enter') doLogin();"
+          />
+          <button class="login-btn" onclick="doLogin()">Sign In →</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast">Saved</div>
+    <div class="hdr">
+      <div class="hdr-eye">THE RANKERS ACADEMY · NAGPUR</div>
+      <div class="hdr-row">
+        <div>
+          <div class="hdr-title">Chapter <span>Tracker</span></div>
+          <div id="hdr-sub" class="hdr-sub">All Batches · Science Stream</div>
+        </div>
+        <div id="hdr-user"></div>
+      </div>
+    </div>
+    <div class="wrap">
+      <div id="tab-dash" class="tab active"></div>
+      <div id="tab-ch" class="tab"></div>
+      <div id="tab-add" class="tab"></div>
+      <div id="tab-log" class="tab"></div>
+      <div id="tab-cls" class="tab"></div>
+      <div id="tab-set" class="tab"></div>
+    </div>
+    <nav class="bnav">
+      <button class="nb active" onclick="sw('dash')" id="nav-dash">
+        <span class="ni">📊</span><span class="nl">Overview</span>
+      </button>
+      <button class="nb" onclick="sw('ch')" id="nav-ch">
+        <span class="ni">📚</span><span class="nl">Chapters</span>
+      </button>
+      <button class="nb" id="nav-add" onclick="sw('add')">
+        <span class="ni">＋</span><span class="nl">Add</span>
+      </button>
+      <button class="nb" onclick="sw('cls')" id="nav-cls">
+        <span class="ni">🎓</span><span class="nl">Classes</span>
+      </button>
+      <button class="nb" onclick="sw('log')" id="nav-log">
+        <span class="ni">🔔</span><span class="nl">Log</span>
+      </button>
+      <button class="nb" onclick="sw('set')" id="nav-set">
+        <span class="ni">⚙️</span><span class="nl">Sync</span>
+      </button>
+    </nav>
+
+    <script>
+      // ═══════════════════════════════════════════════════════════════
+      // AUTH
+      // ═══════════════════════════════════════════════════════════════
+      const USERS = [
+        {
+          id: "admin",
+          name: "Santosh Sir",
+          role: "admin",
+          subject: null,
+          facName: "",
+          pw: "rankers@2026",
+          color: "var(--gold2)",
+        },
+        {
+          id: "phy",
+          name: "Santosh Yadav Sir",
+          role: "faculty",
+          subject: "phy",
+          facName: "Santosh Yadav Sir",
+          pw: "physics@ra",
+          color: "var(--phy-c)",
+        },
+        {
+          id: "chem",
+          name: "Dr. Sowmya Madam",
+          role: "faculty",
+          subject: "chem",
+          facName: "Dr. Sowmya Madam",
+          pw: "chem@ra",
+          color: "var(--chem-c)",
+        },
+        {
+          id: "math",
+          name: "Khan Sir",
+          role: "faculty",
+          subject: "math",
+          facName: "Khan Sir",
+          pw: "maths@ra",
+          color: "var(--math-c)",
+        },
+        {
+          id: "zoo",
+          name: "Nagarale Sir",
+          role: "faculty",
+          subject: "bio",
+          facName: "Nagarale Sir",
+          pw: "zoology@ra",
+          color: "var(--bio-c)",
+        },
+        {
+          id: "bot",
+          name: "Sandip Potdar Sir",
+          role: "faculty",
+          subject: "bio",
+          facName: "Sandip Potdar Sir",
+          pw: "botany@ra",
+          color: "var(--bio-c)",
+        },
+        {
+          id: "sst",
+          name: "Prafful Sir",
+          role: "faculty",
+          subject: "sst",
+          facName: "Prafful Sir",
+          pw: "sst@ra",
+          color: "var(--sst-c)",
+        },
+        {
+          id: "eng",
+          name: "Heena Madam",
+          role: "faculty",
+          subject: "eng",
+          facName: "Heena Madam",
+          pw: "english@ra",
+          color: "var(--eng-c)",
+        },
+      ];
+      let CU = null; // current user
+
+      function initAuth() {
+        const grid = document.getElementById("ugrid");
+        USERS.forEach((u) => {
+          const b = document.createElement("button");
+          b.className = "u-btn" + (u.role === "admin" ? " adm" : "");
+          b.innerHTML = (u.role === "admin" ? "👑 " : "") + u.name;
+          b.dataset.uid = u.id;
+          b.onclick = () => {
+            document
+              .querySelectorAll(".u-btn")
+              .forEach((x) => x.classList.remove("sel"));
+            b.classList.add("sel");
+          };
+          grid.appendChild(b);
+        });
+        try {
+          const s = sessionStorage.getItem("ra-sess");
+          if (s) {
+            const u = USERS.find((x) => x.id === s);
+            if (u) {
+              loginAs(u);
+              return;
+            }
+          }
+        } catch {}
+      }
+      function doLogin() {
+        const sel = document.querySelector(".u-btn.sel");
+        if (!sel) {
+          setLE("Please select your name");
+          return;
+        }
+        const u = USERS.find((x) => x.id === sel.dataset.uid);
+        const pw = document.getElementById("lpwd").value;
+        if (!u) {
+          setLE("User not found");
+          return;
+        }
+        if (pw !== u.pw) {
+          setLE("Wrong password");
+          document.getElementById("lpwd").value = "";
+          return;
+        }
+        loginAs(u);
+      }
+      function loginAs(u) {
+        CU = u;
+        try {
+          sessionStorage.setItem("ra-sess", u.id);
+        } catch {}
+        document.getElementById("login-screen").classList.add("hidden");
+        document.getElementById("hdr-user").innerHTML =
+          `<div class="ubadge" onclick="if(confirm('Sign out as '+CU.name+'?'))logout()"><div><div class="ubadge-name" style="color:${u.color}">${u.name}</div><div class="ubadge-role">${u.role === "admin" ? "Admin" : "Faculty"}</div></div></div>`;
+        document.getElementById("hdr-sub").textContent =
+          u.role === "admin"
+            ? "Admin — All Batches"
+            : u.facName + " · " + subjLabel(u.subject);
+        // Hide add/log for faculty
+        document.getElementById("nav-add").style.display =
+          u.role === "admin" ? "" : "none";
+        document.getElementById("nav-log").style.display =
+          u.role === "admin" ? "" : "none";
+        loadDB();
+        sw("dash");
+      }
+      function logout() {
+        CU = null;
+        try {
+          sessionStorage.removeItem("ra-sess");
+        } catch {}
+        document.getElementById("lpwd").value = "";
+        document.getElementById("lerr").textContent = "";
+        document
+          .querySelectorAll(".u-btn")
+          .forEach((b) => b.classList.remove("sel"));
+        document.getElementById("login-screen").classList.remove("hidden");
+      }
+      function setLE(m) {
+        const e = document.getElementById("lerr");
+        e.textContent = m;
+        setTimeout(() => (e.textContent = ""), 3000);
+      }
+      const isAdmin = () => CU?.role === "admin";
+      const mySubj = () => CU?.subject || null;
+      const myFac = () => CU?.facName || "";
+
+      // ═══════════════════════════════════════════════════════════════
+      // CHAPTER DATA
+      // ═══════════════════════════════════════════════════════════════
+      const CHAPTERS = {
+        "Class 9": {
+          phy: [
+            "Motion",
+            "Force and Laws of Motion",
+            "Gravitation",
+            "Work and Energy",
+            "Sound",
+          ],
+          chem: [
+            "Matter in Our Surroundings",
+            "Is Matter Around Us Pure?",
+            "Atoms and Molecules",
+            "Structure of the Atom",
+          ],
+          bio: [
+            "The Fundamental Unit of Life",
+            "Tissues",
+            "Diversity in Living Organisms",
+            "Why Do We Fall Ill?",
+            "Natural Resources",
+            "Improvement in Food Resources",
+          ],
+          math: [
+            "Number Systems",
+            "Polynomials",
+            "Coordinate Geometry",
+            "Linear Equations in Two Variables",
+            "Introduction to Euclid's Geometry",
+            "Lines and Angles",
+            "Triangles",
+            "Quadrilaterals",
+            "Circles",
+            "Heron's Formula",
+            "Surface Areas and Volumes",
+            "Statistics",
+          ],
+          sst: [
+            "The French Revolution",
+            "Socialism in Europe and the Russian Revolution",
+            "Nazism and the Rise of Hitler",
+            "Forest Society and Colonialism",
+            "Pastoralists in the Modern World",
+            "India – Size and Location",
+            "Physical Features of India",
+            "Drainage",
+            "Climate",
+            "Natural Vegetation and Wildlife",
+            "Population",
+            "What is Democracy? Why Democracy?",
+            "Constitutional Design",
+            "Electoral Politics",
+            "Working of Institutions",
+            "Democratic Rights",
+            "The Story of Village Palampur",
+            "People as Resource",
+            "Poverty as a Challenge",
+            "Food Security in India",
+          ],
+          eng: [
+            "Beehive – The Fun They Had",
+            "Beehive – The Sound of Music",
+            "Beehive – The Little Girl",
+            "Beehive – A Truly Beautiful Mind",
+            "Beehive – The Snake and the Mirror",
+            "Beehive – My Childhood",
+            "Beehive – Reach for the Top",
+            "Beehive – Kathmandu",
+            "Beehive – If I Were You",
+            "Moments – The Lost Child",
+            "Moments – The Adventures of Toto",
+            "Moments – Iswaran the Storyteller",
+            "Moments – In the Kingdom of Fools",
+            "Moments – The Happy Prince",
+            "Moments – Weathering the Storm in Ersama",
+            "Moments – The Last Leaf",
+            "Moments – A House is Not a Home",
+            "Moments – The Beggar",
+            "Grammar – Tenses",
+            "Grammar – Modals",
+            "Grammar – Subject-Verb Agreement",
+            "Writing – Formal Letter",
+            "Writing – Story Writing",
+            "Writing – Descriptive Paragraph",
+          ],
+        },
+        "Class 10": {
+          phy: [
+            "Light – Reflection and Refraction",
+            "Human Eye and the Colourful World",
+            "Electricity",
+            "Magnetic Effects of Electric Current",
+            "Sources of Energy",
+          ],
+          chem: [
+            "Chemical Reactions and Equations",
+            "Acids, Bases and Salts",
+            "Metals and Non-metals",
+            "Carbon and its Compounds",
+            "Periodic Classification of Elements",
+          ],
+          bio: [
+            "Life Processes",
+            "Control and Coordination",
+            "How do Organisms Reproduce?",
+            "Heredity and Evolution",
+            "Our Environment",
+            "Management of Natural Resources",
+          ],
+          math: [
+            "Real Numbers",
+            "Polynomials",
+            "Pair of Linear Equations in Two Variables",
+            "Quadratic Equations",
+            "Arithmetic Progressions",
+            "Triangles",
+            "Coordinate Geometry",
+            "Introduction to Trigonometry",
+            "Some Applications of Trigonometry",
+            "Circles",
+            "Areas Related to Circles",
+            "Surface Areas and Volumes",
+            "Statistics",
+            "Probability",
+          ],
+          sst: [
+            "The Rise of Nationalism in Europe",
+            "Nationalism in India",
+            "The Making of a Global World",
+            "The Age of Industrialisation",
+            "Print Culture and the Modern World",
+            "Resources and Development",
+            "Forest and Wildlife Resources",
+            "Water Resources",
+            "Agriculture",
+            "Minerals and Energy Resources",
+            "Manufacturing Industries",
+            "Lifelines of National Economy",
+            "Power Sharing",
+            "Federalism",
+            "Democracy and Diversity",
+            "Gender, Religion and Caste",
+            "Popular Struggles and Movements",
+            "Political Parties",
+            "Outcomes of Democracy",
+            "Challenges to Democracy",
+            "Development",
+            "Sectors of the Indian Economy",
+            "Money and Credit",
+            "Globalisation and the Indian Economy",
+            "Consumer Rights",
+          ],
+          eng: [
+            "First Flight – A Letter to God",
+            "First Flight – Nelson Mandela: Long Walk to Freedom",
+            "First Flight – Two Stories about Flying",
+            "First Flight – From the Diary of Anne Frank",
+            "First Flight – The Hundred Dresses–I",
+            "First Flight – The Hundred Dresses–II",
+            "First Flight – Glimpses of India",
+            "First Flight – Mijbil the Otter",
+            "First Flight – Madam Rides the Bus",
+            "First Flight – The Sermon at Benares",
+            "First Flight – The Proposal",
+            "Footprints – A Triumph of Surgery",
+            "Footprints – The Thief's Story",
+            "Footprints – The Midnight Visitor",
+            "Footprints – A Question of Trust",
+            "Footprints – Footprints Without Feet",
+            "Footprints – The Making of a Scientist",
+            "Footprints – The Necklace",
+            "Footprints – The Hack Driver",
+            "Footprints – Bholi",
+            "Footprints – The Book That Saved the Earth",
+            "Grammar – Determiners",
+            "Grammar – Reported Speech",
+            "Writing – Analytical Paragraph",
+            "Writing – Formal Letter",
+            "Writing – Debate Writing",
+            "Grammar – Modals",
+          ],
+        },
+        XI: {
+          phy: [
+            "Physical World and Measurement",
+            "Kinematics – Motion in a Straight Line",
+            "Motion in a Plane",
+            "Laws of Motion",
+            "Work, Energy and Power",
+            "System of Particles and Rotational Motion",
+            "Gravitation",
+            "Mechanical Properties of Solids",
+            "Mechanical Properties of Fluids",
+            "Thermal Properties of Matter",
+            "Thermodynamics",
+            "Kinetic Theory",
+            "Oscillations",
+            "Waves",
+          ],
+          chem: [
+            "Some Basic Concepts of Chemistry",
+            "Structure of Atom",
+            "Classification of Elements and Periodicity in Properties",
+            "Chemical Bonding and Molecular Structure",
+            "States of Matter – Gases and Liquids",
+            "Thermodynamics",
+            "Equilibrium",
+            "Redox Reactions",
+            "Hydrogen",
+            "The s-Block Elements",
+            "The p-Block Elements (Groups 13 & 14)",
+            "Organic Chemistry – Basic Principles and Techniques",
+            "Hydrocarbons",
+            "Environmental Chemistry",
+          ],
+          bio: [
+            "The Living World",
+            "Biological Classification",
+            "Plant Kingdom",
+            "Animal Kingdom",
+            "Morphology of Flowering Plants",
+            "Anatomy of Flowering Plants",
+            "Structural Organisation in Animals",
+            "Cell – The Unit of Life",
+            "Biomolecules",
+            "Cell Cycle and Cell Division",
+            "Transport in Plants",
+            "Mineral Nutrition",
+            "Photosynthesis in Higher Plants",
+            "Respiration in Plants",
+            "Plant Growth and Development",
+            "Digestion and Absorption",
+            "Breathing and Exchange of Gases",
+            "Body Fluids and Circulation",
+            "Excretory Products and their Elimination",
+            "Locomotion and Movement",
+            "Neural Control and Coordination",
+            "Chemical Coordination and Integration",
+          ],
+          math: [
+            "Sets",
+            "Relations and Functions",
+            "Trigonometric Functions",
+            "Principle of Mathematical Induction",
+            "Complex Numbers and Quadratic Equations",
+            "Linear Inequalities",
+            "Permutations and Combinations",
+            "Binomial Theorem",
+            "Sequences and Series",
+            "Straight Lines",
+            "Conic Sections",
+            "Introduction to Three-Dimensional Geometry",
+            "Limits and Derivatives",
+            "Mathematical Reasoning",
+            "Statistics",
+            "Probability",
+          ],
+        },
+        XII: {
+          phy: [
+            "Electric Charges and Fields",
+            "Electrostatic Potential and Capacitance",
+            "Current Electricity",
+            "Moving Charges and Magnetism",
+            "Magnetism and Matter",
+            "Electromagnetic Induction",
+            "Alternating Current",
+            "Electromagnetic Waves",
+            "Ray Optics and Optical Instruments",
+            "Wave Optics",
+            "Dual Nature of Radiation and Matter",
+            "Atoms",
+            "Nuclei",
+            "Semiconductor Electronics",
+          ],
+          chem: [
+            "The Solid State",
+            "Solutions",
+            "Electrochemistry",
+            "Chemical Kinetics",
+            "Surface Chemistry",
+            "General Principles of Isolation of Elements",
+            "The p-Block Elements (Groups 15–18)",
+            "The d and f Block Elements",
+            "Coordination Compounds",
+            "Haloalkanes and Haloarenes",
+            "Alcohols, Phenols and Ethers",
+            "Aldehydes, Ketones and Carboxylic Acids",
+            "Amines",
+            "Biomolecules",
+            "Polymers",
+            "Chemistry in Everyday Life",
+          ],
+          bio: [
+            "Reproduction in Organisms",
+            "Sexual Reproduction in Flowering Plants",
+            "Human Reproduction",
+            "Reproductive Health",
+            "Principles of Inheritance and Variation",
+            "Molecular Basis of Inheritance",
+            "Evolution",
+            "Human Health and Disease",
+            "Strategies for Enhancement in Food Production",
+            "Microbes in Human Welfare",
+            "Biotechnology – Principles and Processes",
+            "Biotechnology and its Applications",
+            "Organisms and Populations",
+            "Ecosystem",
+            "Biodiversity and Conservation",
+            "Environmental Issues",
+          ],
+          math: [
+            "Relations and Functions",
+            "Inverse Trigonometric Functions",
+            "Matrices",
+            "Determinants",
+            "Continuity and Differentiability",
+            "Application of Derivatives",
+            "Integrals",
+            "Application of Integrals",
+            "Differential Equations",
+            "Vector Algebra",
+            "Three Dimensional Geometry",
+            "Linear Programming",
+            "Probability",
+          ],
+        },
+      };
+
+      const DUAL = ["Star-01", "Star-02", "Alpha", "Repeaters"];
+      const BATCHES = [
+        "Class 8",
+        "Class 9",
+        "Class 10",
+        "Star-01",
+        "Star-02",
+        "Alpha",
+        "Repeaters",
+      ];
+      const BATCH_SUBJS = {
+        "Class 8": [],
+        "Class 9": ["phy", "chem", "bio", "math", "sst", "eng"],
+        "Class 10": ["phy", "chem", "bio", "math", "sst", "eng"],
+        "Star-01": ["phy", "chem", "bio", "math"],
+        "Star-02": ["phy", "chem", "bio", "math"],
+        Alpha: ["phy", "chem", "bio", "math"],
+        Repeaters: ["phy", "chem", "bio", "math"],
+      };
+
+      // KEY FIX: get chapters for a specific batch+cls+subject
+      function chaptersFor(batch, cls, subj) {
+        if (batch === "Class 9") return CHAPTERS["Class 9"][subj] || [];
+        if (batch === "Class 10") return CHAPTERS["Class 10"][subj] || [];
+        if (DUAL.includes(batch) && cls) return CHAPTERS[cls]?.[subj] || [];
+        return [];
+      }
+
+      const SUBJ_META = {
+        phy: {
+          label: "Physics",
+          short: "PHY",
+          cls: "phy",
+          color: "var(--phy-c)",
+          bg: "var(--phy-bg)",
+          border: "var(--phy-b)",
+        },
+        chem: {
+          label: "Chemistry",
+          short: "CHEM",
+          cls: "chem",
+          color: "var(--chem-c)",
+          bg: "var(--chem-bg)",
+          border: "var(--chem-b)",
+        },
+        bio: {
+          label: "Biology",
+          short: "BIO",
+          cls: "bio",
+          color: "var(--bio-c)",
+          bg: "var(--bio-bg)",
+          border: "var(--bio-b)",
+        },
+        math: {
+          label: "Mathematics",
+          short: "MATH",
+          cls: "math",
+          color: "var(--math-c)",
+          bg: "var(--math-bg)",
+          border: "var(--math-b)",
+        },
+        sst: {
+          label: "Social Sci",
+          short: "SST",
+          cls: "sst",
+          color: "var(--sst-c)",
+          bg: "var(--sst-bg)",
+          border: "var(--sst-b)",
+        },
+        eng: {
+          label: "English",
+          short: "ENG",
+          cls: "eng",
+          color: "var(--eng-c)",
+          bg: "var(--eng-bg)",
+          border: "var(--eng-b)",
+        },
+      };
+      const STATUSES = [
+        {
+          id: "not-started",
+          label: "Not Started",
+          pill: "sp-not-started",
+          card: "st-not-started",
+        },
+        {
+          id: "in-progress",
+          label: "In Progress",
+          pill: "sp-in-progress",
+          card: "st-in-progress",
+        },
+        {
+          id: "completed",
+          label: "Completed",
+          pill: "sp-completed",
+          card: "st-completed",
+        },
+        {
+          id: "revision",
+          label: "Revision",
+          pill: "sp-revision",
+          card: "st-revision",
+        },
+      ];
+      const FACULTIES = [
+        "Santosh Yadav Sir",
+        "Dr. Sowmya Madam",
+        "Khan Sir",
+        "Nagarale Sir",
+        "Sandip Potdar Sir",
+        "Prafful Sir",
+        "Heena Madam",
+      ];
+      const SUBJ_FAC = {
+        phy: "Santosh Yadav Sir",
+        chem: "Dr. Sowmya Madam",
+        math: "Khan Sir",
+        bio: "",
+        sst: "Prafful Sir",
+        eng: "Heena Madam",
+      };
+      const SUBJ_FAC_LBL = {
+        phy: "Santosh Yadav Sir",
+        chem: "Dr. Sowmya Madam",
+        math: "Khan Sir",
+        bio: "Nagarale Sir / Potdar Sir",
+        sst: "Prafful Sir",
+        eng: "Heena Madam",
+      };
+      function subjLabel(s) {
+        return SUBJ_META[s]?.label || s || "";
+      }
+      function sjInfo(s) {
+        return SUBJ_META[s] || SUBJ_META.phy;
+      }
+      function stInfo(s) {
+        return STATUSES.find((x) => x.id === s) || STATUSES[0];
+      }
+      function fmtD(iso) {
+        try {
+          return new Date(iso).toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          });
+        } catch {
+          return iso;
+        }
+      }
+      function fmtT(iso) {
+        try {
+          return new Date(iso).toLocaleTimeString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+        } catch {
+          return "";
+        }
+      }
+      function esc(s) {
+        return String(s || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+      function uid() {
+        return Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+      }
+      function toast(m = "Saved") {
+        const e = document.getElementById("toast");
+        e.textContent = m;
+        e.classList.add("show");
+        setTimeout(() => e.classList.remove("show"), 2200);
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // DB
+      // ═══════════════════════════════════════════════════════════════
+      const SK = {
+        ch: "ra-ch-v6",
+        log: "ra-log-v6",
+        cls: "ra-cls-v2",
+        url: "ra-gas-url",
+        init: "ra-init-v6",
+      };
+      let DB = { chapters: [], log: [], classLogs: [] };
+
+      function loadDB() {
+        try {
+          const c = localStorage.getItem(SK.ch);
+          DB.chapters = c ? JSON.parse(c) : [];
+        } catch {
+          DB.chapters = [];
+        }
+        try {
+          const l = localStorage.getItem(SK.log);
+          DB.log = l ? JSON.parse(l) : [];
+        } catch {
+          DB.log = [];
+        }
+        try {
+          const cl = localStorage.getItem(SK.cls);
+          DB.classLogs = cl ? JSON.parse(cl) : [];
+        } catch {
+          DB.classLogs = [];
+        }
+        if (!localStorage.getItem(SK.init)) seedDB();
+      }
+      function seedDB() {
+        const now = new Date().toISOString();
+        ["Class 9", "Class 10"].forEach((batch) => {
+          BATCH_SUBJS[batch].forEach((subj) => {
+            (CHAPTERS[batch][subj] || []).forEach((name, i) =>
+              DB.chapters.push(mkCh(batch, "", subj, name, i, now)),
+            );
+          });
+        });
+        ["Star-01", "Star-02", "Alpha", "Repeaters"].forEach((batch) => {
+          ["XI", "XII"].forEach((cls) => {
+            BATCH_SUBJS[batch].forEach((subj) => {
+              (CHAPTERS[cls][subj] || []).forEach((name, i) =>
+                DB.chapters.push(mkCh(batch, cls, subj, name, i, now)),
+              );
+            });
+          });
+        });
+        persistCh();
+        localStorage.setItem(SK.init, "1");
+      }
+      function mkCh(batch, cls, subj, name, order, now) {
+        return {
+          id: uid(),
+          batch,
+          cls: cls || "",
+          subject: subj,
+          name,
+          status: "not-started",
+          faculty: SUBJ_FAC[subj] || "",
+          startDate: "",
+          completedDate: "",
+          timeTaken: "",
+          progress: 0,
+          notes: "",
+          topics: "",
+          order,
+          createdAt: now,
+          updatedAt: now,
+        };
+      }
+      function persistCh() {
+        try {
+          localStorage.setItem(SK.ch, JSON.stringify(DB.chapters));
+        } catch {}
+      }
+      function persistLog() {
+        try {
+          localStorage.setItem(SK.log, JSON.stringify(DB.log));
+        } catch {}
+      }
+      function persistCls() {
+        try {
+          localStorage.setItem(SK.cls, JSON.stringify(DB.classLogs));
+        } catch {}
+      }
+      function addLog(c, action) {
+        DB.log.unshift({
+          id: uid(),
+          chId: c.id,
+          chName: c.name,
+          batch: c.batch,
+          cls: c.cls || "",
+          subject: c.subject,
+          faculty: c.faculty || "",
+          action,
+          date: new Date().toISOString(),
+        });
+        persistLog();
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // TAB
+      // ═══════════════════════════════════════════════════════════════
+      let CUR = "dash";
+      function sw(name) {
+        document
+          .querySelectorAll(".tab")
+          .forEach((t) => t.classList.remove("active"));
+        document
+          .querySelectorAll(".nb")
+          .forEach((b) => b.classList.remove("active"));
+        document.getElementById("tab-" + name).classList.add("active");
+        document.getElementById("nav-" + name).classList.add("active");
+        CUR = name;
+        render(name);
+      }
+      function render(n) {
+        const el = document.getElementById("tab-" + n);
+        if (!el) return;
+        if (n === "dash") el.innerHTML = renderDash();
+        if (n === "ch") el.innerHTML = renderCh();
+        if (n === "add") el.innerHTML = renderAdd();
+        if (n === "log") el.innerHTML = renderLog();
+        if (n === "cls") el.innerHTML = renderCls();
+        if (n === "set") el.innerHTML = renderSet();
+      }
+      function rerender() {
+        render(CUR);
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // DASHBOARD
+      // ═══════════════════════════════════════════════════════════════
+      let dBatch = "all";
+      function renderDash() {
+        const all = DB.chapters;
+        const total = all.length,
+          done = all.filter((c) => c.status === "completed").length,
+          prog = all.filter((c) => c.status === "in-progress").length,
+          rev = all.filter((c) => c.status === "revision").length;
+
+        const bpills = ["all", ...BATCHES]
+          .map(
+            (b) =>
+              `<button class="pill ${dBatch === b ? "on" : ""}" onclick="dBatch='${esc(b)}';rerender()">${b === "all" ? "All Batches" : esc(b)}</button>`,
+          )
+          .join("");
+
+        const bList = dBatch === "all" ? BATCHES : [dBatch];
+        const bCards = bList
+          .map((batch) => {
+            const bc = DB.chapters.filter((c) => c.batch === batch);
+            if (!bc.length && batch === "Class 8")
+              return `<div class="dbc" onclick="chBatch='${esc(batch)}';sw('ch')"><div style="font-weight:800;font-size:14px;margin-bottom:4px">${esc(batch)}</div><div style="font-size:10px;color:var(--muted2)">No chapters — add manually</div></div>`;
+            if (!bc.length) return "";
+            const bDone = bc.filter((c) => c.status === "completed").length;
+            const bPct = bc.length ? Math.round((bDone / bc.length) * 100) : 0;
+            const isDual = DUAL.includes(batch);
+            let chips = "";
+            if (isDual) {
+              ["XI", "XII"].forEach((cls) => {
+                const cc = bc.filter((c) => c.cls === cls);
+                if (!cc.length) return;
+                const cd = cc.filter((c) => c.status === "completed").length;
+                const cp = Math.round((cd / cc.length) * 100);
+                chips += `<div style="margin-bottom:5px"><span class="cb ${cls === "XI" ? "c11" : "c12"}">Class ${cls}</span> <span style="font-size:9px;color:${cp === 100 ? "var(--c-done-t)" : "var(--gold2)"};font-weight:800;margin-left:4px">${cp}%</span></div><div class="dbc-chips" style="margin-bottom:6px">`;
+                BATCH_SUBJS[batch].forEach((s) => {
+                  const sc = cc.filter((c) => c.subject === s);
+                  if (!sc.length) return;
+                  const sd = sc.filter((c) => c.status === "completed").length,
+                    sp2 = sc.filter((c) => c.status === "in-progress").length;
+                  const sj = sjInfo(s);
+                  chips += `<span class="dcc" style="color:${sj.color};background:${sj.bg};border-color:${sj.border}">${sj.short} ${sd}/${sc.length}${sp2 ? ` ·${sp2}▶` : ""}</span>`;
+                });
+                chips += "</div>";
+              });
+            } else {
+              chips = '<div class="dbc-chips">';
+              BATCH_SUBJS[batch].forEach((s) => {
+                const sc = bc.filter((c) => c.subject === s);
+                if (!sc.length) return;
+                const sd = sc.filter((c) => c.status === "completed").length,
+                  sp2 = sc.filter((c) => c.status === "in-progress").length;
+                const sj = sjInfo(s);
+                chips += `<span class="dcc" style="color:${sj.color};background:${sj.bg};border-color:${sj.border}">${sj.short} ${sd}/${sc.length}${sp2 ? ` ·${sp2}▶` : ""}</span>`;
+              });
+              chips += "</div>";
+            }
+            return `<div class="dbc" onclick="chBatch='${esc(batch)}';chCls=${isDual ? "'XI'" : "''"};sw('ch')">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-weight:800;font-size:14px">${esc(batch)}</div>
+        <div style="font-size:11px;color:${bPct === 100 ? "var(--c-done-t)" : "var(--gold2)"};font-weight:800">${bPct}%</div>
+      </div>
+      <div style="height:3px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:8px">
+        <div style="height:100%;width:${bPct}%;background:${bPct === 100 ? "var(--c-done-b)" : "var(--gold2)"};border-radius:4px"></div>
+      </div>
+      ${chips}</div>`;
+          })
+          .join("");
+
+        return `<div class="vh"><div class="vt">📊 Overview</div>${isAdmin() ? `<button class="btn-g" onclick="editId=null;sw('add')">+ Add</button>` : ""}</div>
+    <div class="sg"><div class="sc"><div class="sv">${total}</div><div class="sl">Total</div></div>
+    <div class="sc"><div class="sv" style="color:var(--c-prog-t)">${prog}</div><div class="sl">Active</div></div>
+    <div class="sc"><div class="sv" style="color:var(--c-done-t)">${done}</div><div class="sl">Done</div></div>
+    <div class="sc"><div class="sv" style="color:var(--c-rev-t)">${rev}</div><div class="sl">Revision</div></div></div>
+    <div class="leg">
+      <div class="li"><div class="ld" style="background:var(--c-done-b)"></div><span style="color:var(--c-done-t)">Completed</span></div>
+      <div class="li"><div class="ld" style="background:var(--c-prog-b)"></div><span style="color:var(--c-prog-t)">In Progress</span></div>
+      <div class="li"><div class="ld" style="background:var(--c-rev-b)"></div><span style="color:var(--c-rev-t)">Revision</span></div>
+      <div class="li"><div class="ld" style="background:var(--border)"></div><span style="color:var(--muted)">Not Started</span></div>
+    </div>
+    <div class="hscroll">${bpills}</div>${bCards}`;
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // CHAPTERS
+      // ═══════════════════════════════════════════════════════════════
+      let chBatch = "Star-01",
+        chCls = "XI",
+        chSubj = "phy",
+        chFilter = "all",
+        chSearch = "",
+        chExp = null;
+      function renderCh() {
+        const isDual = DUAL.includes(chBatch) || chBatch === "Repeaters";
+        // Faculty can only see their own subject
+        if (!isAdmin() && mySubj()) chSubj = mySubj();
+        const subjs = BATCH_SUBJS[chBatch] || [];
+        if (!subjs.includes(chSubj) && subjs.length) chSubj = subjs[0];
+        if (isDual && !chCls) chCls = "XI";
+
+        let filtered = DB.chapters.filter((c) => {
+          if (c.batch !== chBatch) return false;
+          if (isDual && c.cls !== chCls) return false;
+          if (c.subject !== chSubj) return false;
+          if (chFilter !== "all" && c.status !== chFilter) return false;
+          if (chSearch) {
+            const q = chSearch.toLowerCase();
+            return (
+              c.name.toLowerCase().includes(q) ||
+              (c.faculty || "").toLowerCase().includes(q)
+            );
+          }
+          return true;
+        });
+        filtered.sort((a, b) => a.order - b.order);
+
+        const total = filtered.length,
+          done = filtered.filter((c) => c.status === "completed").length,
+          prog = filtered.filter((c) => c.status === "in-progress").length;
+        const pct = total ? Math.round((done / total) * 100) : 0;
+        const sj = sjInfo(chSubj);
+        const avgD = (() => {
+          const d = filtered.filter(
+            (c) => c.status === "completed" && c.timeTaken,
+          );
+          return d.length
+            ? (
+                d.reduce((s, c) => s + Number(c.timeTaken), 0) / d.length
+              ).toFixed(1)
+            : null;
+        })();
+
+        const bpills = BATCHES.map(
+          (b) =>
+            `<button class="pill ${chBatch === b ? "on" : ""}" onclick="chBatch='${esc(b)}';chCls=${DUAL.includes(b) || b === "Repeaters" ? "'XI'" : "''"};chExp=null;rerender()">${esc(b)}</button>`,
+        ).join("");
+        const clsToggle = isDual
+          ? `<div class="cls-toggle"><button class="cls-btn ${chCls === "XI" ? "on" : ""}" onclick="chCls='XI';chExp=null;rerender()">Class XI</button><button class="cls-btn ${chCls === "XII" ? "on" : ""}" onclick="chCls='XII';chExp=null;rerender()">Class XII</button></div>`
+          : chBatch === "Class 9" || chBatch === "Class 10"
+            ? `<div style="margin-bottom:10px"><span class="cb" style="font-size:10px;padding:4px 12px">${esc(chBatch)}</span></div>`
+            : "";
+
+        // Show subject tabs — faculty only sees theirs
+        const visSubjs = isAdmin()
+          ? subjs
+          : subjs.filter((s) => s === mySubj());
+        const stabs = visSubjs
+          .map((s) => {
+            const sj2 = sjInfo(s);
+            return `<button class="stab ${s} ${chSubj === s ? "on" : ""}" onclick="chSubj='${s}';chExp=null;rerender()"><div>${sj2.short}</div><div style="font-size:7px;opacity:.75;margin-top:1px">${(SUBJ_FAC_LBL[s] || "").split(" ")[0]}</div></button>`;
+          })
+          .join("");
+
+        const sfilters = ["all", ...STATUSES.map((s) => s.id)]
+          .map((st) => {
+            const info = STATUSES.find((s) => s.id === st);
+            return `<button class="bsm ${chFilter === st ? "on" : ""}" onclick="chFilter='${st}';rerender()">${st === "all" ? "All" : info.label}</button>`;
+          })
+          .join("");
+
+        const cards =
+          filtered.length === 0
+            ? `<div class="empty">No chapters found.<br><span style="font-size:11px">Change filter or add a chapter.</span></div>`
+            : filtered.map((c, i) => chCard(c, i + 1)).join("");
+
+        return `<div class="vh"><div class="vt">📚 Chapters</div>${isAdmin() ? `<button class="btn-g" onclick="editId=null;sw('add')">+ Add</button>` : ""}</div>
+    <div class="hscroll">${bpills}</div>
+    ${clsToggle}
+    ${subjs.length ? `<div class="stabs">${stabs}</div>` : ""}
+    ${
+      subjs.length
+        ? `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+      <div style="font-size:10px;color:${sj.color};font-weight:800;text-transform:uppercase;letter-spacing:.04em">${sj.label}${isDual ? " · Class " + chCls : ""} · ${SUBJ_FAC_LBL[chSubj] || ""}</div>
+      <div style="font-size:10px;color:var(--gold2);font-weight:800">${pct}%${avgD ? ` · Avg ${avgD} days` : ""}</div>
+    </div>
+    <div class="pt"><div class="pf ${sj.cls}" style="width:${pct}%"></div></div>
+    <div style="font-size:9px;color:var(--muted);margin-bottom:11px">${done}/${total} completed${prog ? ` · ${prog} in progress` : ""}</div>
+    <div class="sbar"><input type="text" id="ch-s" placeholder="Search chapters or faculty..." value="${esc(chSearch)}" oninput="chSearch=this.value;chExp=null;rerender();setTimeout(()=>document.getElementById('ch-s')?.focus(),20)"></div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:11px">${sfilters}</div>
+    <div class="leg" style="margin-bottom:10px">
+      <div class="li"><div class="ld" style="background:var(--c-done-b)"></div><span style="color:var(--c-done-t)">Completed</span></div>
+      <div class="li"><div class="ld" style="background:var(--c-prog-b)"></div><span style="color:var(--c-prog-t)">In Progress</span></div>
+      <div class="li"><div class="ld" style="background:var(--c-rev-b)"></div><span style="color:var(--c-rev-t)">Revision</span></div>
+      <div class="li"><div class="ld" style="background:var(--border)"></div><span style="color:var(--muted)">Not Started</span></div>
+    </div>
+    ${cards}`
+        : '<div class="empty">No subjects configured for this batch.</div>'
+    }`;
+      }
+
+      function chCard(c, num) {
+        const exp = chExp === c.id,
+          st = stInfo(c.status),
+          sj = sjInfo(c.subject);
+        const isDone = c.status === "completed";
+        // Faculty can change status but not delete/add
+        const canEdit = isAdmin();
+        return `<div class="ch ${st.card}" onclick="chExp=chExp==='${c.id}'?null:'${c.id}';rerender()">
+    <div class="ch-inner">
+      <div class="ch-top">
+        <div style="flex:1">
+          <div class="ch-num">${c.cls ? "Class " + c.cls + " · " : ""}Ch.${num}</div>
+          <div class="ch-name ${isDone ? "done" : ""}">${esc(c.name)}</div>
+        </div>
+        <span class="sp ${st.pill}">${st.label}</span>
+      </div>
+      <div class="meta">
+        ${c.faculty ? `<div class="mc">👤 <b>${esc(c.faculty)}</b></div>` : ""}
+        ${c.startDate ? `<div class="mc">📅 <b>${fmtD(c.startDate)}</b></div>` : ""}
+        ${c.timeTaken ? `<div class="mc">📆 <b>${c.timeTaken} days</b></div>` : ""}
+        ${c.completedDate ? `<div class="mc">✅ <b>${fmtD(c.completedDate)}</b></div>` : ""}
+      </div>
+      ${c.progress > 0 && !isDone ? `<div class="pt"><div class="pf ${sj.cls}" style="width:${Math.min(c.progress, 100)}%"></div></div><div class="pl">${c.progress}% through chapter</div>` : ""}
+    </div>
+    ${
+      exp
+        ? `<div class="ch-det" onclick="event.stopPropagation()">
+      ${c.notes ? `<div class="fl">Notes</div><div class="fv">${esc(c.notes)}</div>` : ""}
+      ${c.topics ? `<div class="fl">Topics Covered</div><div class="fv">${esc(c.topics)}</div>` : ""}
+      <button class="btn-mark" onclick="markSt('${c.id}','completed')" ${isDone ? 'disabled style="opacity:.4;cursor:default"' : ""}>
+        ${isDone ? "✅ Already Completed" : "✅ Mark as Completed"}
+      </button>
+      <div class="fl" style="margin-bottom:6px">Change Status</div>
+      <div class="st-row">${STATUSES.map((s) => `<button class="bsm ${c.status === s.id ? "on" : ""}" onclick="markSt('${c.id}','${s.id}')">${s.label}</button>`).join("")}</div>
+      ${
+        canEdit
+          ? `
+      <div class="fl" style="margin-bottom:5px">Assign Faculty</div>
+      <select onchange="setFac('${c.id}',this.value)" style="margin-bottom:10px">
+        <option value="">-- Select --</option>${facOpts(c.subject, c.faculty)}
+      </select>`
+          : ""
+      }
+      <div class="fl" style="margin-bottom:5px">Chapter Progress %</div>
+      <div style="display:flex;gap:7px;align-items:center;margin-bottom:10px">
+        <input type="number" id="prog-${c.id}" min="0" max="100" value="${c.progress || 0}" style="width:68px;margin-bottom:0" onclick="event.stopPropagation()">
+        <span style="font-size:10px;color:var(--muted)">%</span>
+        <button class="bsm" onclick="saveProg('${c.id}')">Save</button>
+      </div>
+      <div class="fl" style="margin-bottom:5px">Days Taken to Complete</div>
+      <div style="display:flex;gap:7px;align-items:center;margin-bottom:10px">
+        <input type="number" id="time-${c.id}" min="0" step="1" value="${c.timeTaken || ""}" placeholder="e.g. 7" style="width:86px;margin-bottom:0" onclick="event.stopPropagation()">
+        <span style="font-size:10px;color:var(--muted)">days</span>
+        <button class="bsm" onclick="saveTime('${c.id}')">Save</button>
+      </div>
+      <div class="fl" style="margin-bottom:2px">Last Updated</div>
+      <div class="fv">${fmtD(c.updatedAt)} · ${fmtT(c.updatedAt)}</div>
+      <div style="display:flex;gap:7px;align-items:center">
+        ${canEdit ? `<button class="bsm" onclick="openEdit('${c.id}')">✏️ Edit</button><button class="bdel" onclick="delCh('${c.id}')">DELETE</button>` : ""}
+      </div>
+    </div>`
+        : ""
+    }
+  </div>`;
+      }
+
+      function facOpts(subj, sel) {
+        let list = [...FACULTIES];
+        const def = SUBJ_FAC[subj];
+        if (def) {
+          list = list.filter((f) => f !== def);
+          list = [def, ...list];
+        }
+        return list
+          .map((f) => {
+            let lbl = f;
+            if (subj === "bio") {
+              if (f === "Nagarale Sir") lbl = "Nagarale Sir (Zoology)";
+              if (f === "Sandip Potdar Sir") lbl = "Sandip Potdar Sir (Botany)";
+            }
+            return `<option value="${esc(f)}" ${sel === f ? "selected" : ""}>${esc(lbl)}</option>`;
+          })
+          .join("");
+      }
+      function markSt(id, status) {
+        const c = DB.chapters.find((x) => x.id === id);
+        if (!c) return;
+        const old = c.status;
+        c.status = status;
+        c.updatedAt = new Date().toISOString();
+        if (status === "completed" && !c.completedDate)
+          c.completedDate = new Date().toISOString().slice(0, 10);
+        if (status !== "completed") c.completedDate = "";
+        persistCh();
+        addLog(c, `${old} → ${status}`);
+        toast(
+          status === "completed" ? "Chapter Completed! 🎉" : "Status updated",
+        );
+        rerender();
+      }
+      function setFac(id, fac) {
+        const c = DB.chapters.find((x) => x.id === id);
+        if (!c) return;
+        c.faculty = fac;
+        c.updatedAt = new Date().toISOString();
+        persistCh();
+        addLog(c, `Faculty: ${fac}`);
+        toast("Faculty assigned");
+        rerender();
+      }
+      function saveProg(id) {
+        const v = Math.min(
+          Math.max(
+            parseInt(document.getElementById("prog-" + id)?.value || 0),
+            0,
+          ),
+          100,
+        );
+        const c = DB.chapters.find((x) => x.id === id);
+        if (!c) return;
+        c.progress = v;
+        c.updatedAt = new Date().toISOString();
+        persistCh();
+        addLog(c, `Progress: ${v}%`);
+        toast("Progress saved");
+        rerender();
+      }
+      function saveTime(id) {
+        const v = parseInt(document.getElementById("time-" + id)?.value || 0);
+        const c = DB.chapters.find((x) => x.id === id);
+        if (!c) return;
+        c.timeTaken = v;
+        c.updatedAt = new Date().toISOString();
+        persistCh();
+        addLog(c, `Days taken: ${v}`);
+        toast("Days saved");
+        rerender();
+      }
+      function delCh(id) {
+        if (!confirm("Delete?")) return;
+        DB.chapters = DB.chapters.filter((c) => c.id !== id);
+        persistCh();
+        chExp = null;
+        toast("Deleted");
+        rerender();
+      }
+      function openEdit(id) {
+        editId = id;
+        sw("add");
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // ADD / EDIT (Admin only)
+      // ═══════════════════════════════════════════════════════════════
+      let editId = null;
+      function renderAdd() {
+        if (!isAdmin()) return `<div class="empty">Admin access only.</div>`;
+        const ed = editId ? DB.chapters.find((c) => c.id === editId) : null;
+        const bOpts = BATCHES.map(
+          (b) =>
+            `<option value="${esc(b)}" ${ed?.batch === b ? "selected" : ""}>${esc(b)}</option>`,
+        ).join("");
+        const sOpts = Object.entries(SUBJ_META)
+          .map(
+            ([k, v]) =>
+              `<option value="${k}" ${ed?.subject === k ? "selected" : ""}>${v.label}</option>`,
+          )
+          .join("");
+        const stOpts = STATUSES.map(
+          (s) =>
+            `<option value="${s.id}" ${ed?.status === s.id ? "selected" : ""}>${s.label}</option>`,
+        ).join("");
+        const fOpts = facOpts(ed?.subject || "phy", ed?.faculty || "");
+        const clsOpts = `<option value="">N/A (Class 9/10)</option><option value="XI" ${ed?.cls === "XI" ? "selected" : ""}>Class XI</option><option value="XII" ${ed?.cls === "XII" ? "selected" : ""}>Class XII</option>`;
+        return `<div class="vh"><div class="vt">${ed ? "✏️ Edit" : "＋ Add"} Chapter</div>${ed ? `<button class="btn-gh" onclick="editId=null;sw('ch')">Cancel</button>` : ""}</div>
+    <div class="fcard">
+      <div class="ftitle">Chapter Details</div>
+      <div class="ilbl">Chapter Name *</div>
+      <input type="text" id="f-name" placeholder="e.g. Atomic Structure" value="${esc(ed?.name || "")}">
+      <div class="frow">
+        <div><div class="ilbl">Batch *</div><select id="f-batch"><option value="">Select Batch</option>${bOpts}</select></div>
+        <div><div class="ilbl">Class (XI/XII)</div><select id="f-cls">${clsOpts}</select></div>
+      </div>
+      <div class="frow">
+        <div><div class="ilbl">Subject *</div><select id="f-subj"><option value="">Select</option>${sOpts}</select></div>
+        <div><div class="ilbl">Faculty</div><select id="f-fac"><option value="">Select</option>${fOpts}</select></div>
+      </div>
+      <div class="frow">
+        <div><div class="ilbl">Status</div><select id="f-st">${stOpts}</select></div>
+        <div><div class="ilbl">Start Date</div><input type="date" id="f-start" value="${ed?.startDate || ""}"></div>
+      </div>
+      <div class="frow">
+        <div><div class="ilbl">Days Taken</div><input type="number" id="f-time" placeholder="e.g. 7" min="0" step="1" value="${ed?.timeTaken || ""}"></div>
+        <div><div class="ilbl">Progress %</div><input type="number" id="f-prog" placeholder="0–100" min="0" max="100" value="${ed?.progress || 0}"></div>
+      </div>
+      <div class="ilbl">Topics Covered</div>
+      <textarea id="f-topics" rows="2" placeholder="e.g. Bohr model, Quantum numbers...">${esc(ed?.topics || "")}</textarea>
+      <div class="ilbl">Notes / Remarks</div>
+      <textarea id="f-notes" rows="2" placeholder="Any notes...">${esc(ed?.notes || "")}</textarea>
+      <button class="btn-g" style="width:100%;padding:12px;font-size:13px;border-radius:10px" onclick="saveCh()">${ed ? "Save Changes" : "Add Chapter"}</button>
+    </div>`;
+      }
+      function saveCh() {
+        const name = document.getElementById("f-name")?.value.trim() || "";
+        const batch = document.getElementById("f-batch")?.value || "";
+        const subj = document.getElementById("f-subj")?.value || "";
+        if (!name || !batch || !subj) {
+          toast("Fill name, batch & subject");
+          return;
+        }
+        const cls = document.getElementById("f-cls")?.value || "";
+        const fac = document.getElementById("f-fac")?.value || "";
+        const status = document.getElementById("f-st")?.value || "not-started";
+        const startDate = document.getElementById("f-start")?.value || "";
+        const timeTaken =
+          parseInt(document.getElementById("f-time")?.value) || "";
+        const progress = Math.min(
+          Math.max(parseInt(document.getElementById("f-prog")?.value) || 0, 0),
+          100,
+        );
+        const topics = document.getElementById("f-topics")?.value.trim() || "";
+        const notes = document.getElementById("f-notes")?.value.trim() || "";
+        const now = new Date().toISOString();
+        if (editId) {
+          const c = DB.chapters.find((x) => x.id === editId);
+          if (c) {
+            const old = c.status;
+            Object.assign(c, {
+              name,
+              batch,
+              cls,
+              subject: subj,
+              faculty: fac,
+              status,
+              startDate,
+              timeTaken,
+              progress,
+              topics,
+              notes,
+              updatedAt: now,
+            });
+            if (status === "completed" && !c.completedDate)
+              c.completedDate = now.slice(0, 10);
+            if (status !== "completed") c.completedDate = "";
+            persistCh();
+            addLog(
+              c,
+              old !== status ? `Edited (${old}→${status})` : "Chapter edited",
+            );
+          }
+          editId = null;
+          toast("Updated ✓");
+          sw("ch");
+        } else {
+          const maxO = DB.chapters
+            .filter(
+              (c) => c.batch === batch && c.cls === cls && c.subject === subj,
+            )
+            .reduce((m, c) => Math.max(m, c.order || 0), -1);
+          const c = mkCh(batch, cls, subj, name, maxO + 1, now);
+          Object.assign(c, {
+            faculty: fac,
+            status,
+            startDate,
+            timeTaken,
+            progress,
+            topics,
+            notes,
+            completedDate: status === "completed" ? now.slice(0, 10) : "",
+          });
+          DB.chapters.push(c);
+          persistCh();
+          addLog(c, "Chapter added");
+          toast("Added ✓");
+          sw("ch");
+        }
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // UPDATE LOG (Admin only)
+      // ═══════════════════════════════════════════════════════════════
+      let logBatch = "all",
+        logSubj = "all",
+        logCls = "all";
+      function renderLog() {
+        if (!isAdmin()) return `<div class="empty">Admin access only.</div>`;
+        const bpills = ["all", ...BATCHES]
+          .map(
+            (b) =>
+              `<button class="pill ${logBatch === b ? "on" : ""}" onclick="logBatch='${esc(b)}';rerender()">${b === "all" ? "All" : esc(b)}</button>`,
+          )
+          .join("");
+        const clspills = ["all", "XI", "XII"]
+          .map(
+            (c) =>
+              `<button class="pill ${logCls === c ? "on" : ""}" onclick="logCls='${c}';rerender()">${c === "all" ? "All Classes" : "Class " + c}</button>`,
+          )
+          .join("");
+        const spills = ["all", ...Object.keys(SUBJ_META)]
+          .map((s) => {
+            const sj = SUBJ_META[s];
+            const isA = logSubj === s;
+            return `<button class="pill ${isA ? "on" : ""}" onclick="logSubj='${s}';rerender()" style="${isA && s !== "all" ? `border-color:${sj.border};background:${sj.bg};color:${sj.color}` : ""}">${s === "all" ? "All" : sj.short}</button>`;
+          })
+          .join("");
+        const f = DB.log.filter((u) => {
+          if (logBatch !== "all" && u.batch !== logBatch) return false;
+          if (logSubj !== "all" && u.subject !== logSubj) return false;
+          if (logCls !== "all" && u.cls !== logCls) return false;
+          return true;
+        });
+        const grouped = {};
+        f.forEach((u) => {
+          const d = u.date.slice(0, 10);
+          if (!grouped[d]) grouped[d] = [];
+          grouped[d].push(u);
+        });
+        const html = Object.keys(grouped)
+          .sort((a, b) => b.localeCompare(a))
+          .slice(0, 40)
+          .map(
+            (day) => `
+    <div style="margin-bottom:18px"><div class="slbl">${fmtD(day + "T00:00:00")}</div>
+    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:8px 13px">
+      ${grouped[day]
+        .map((u) => {
+          const sj = sjInfo(u.subject);
+          return `<div class="ue">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:2px">
+          ${u.cls ? `<span class="cb ${u.cls === "XI" ? "c11" : "c12"}" style="font-size:8px">Class ${u.cls}</span>` : ""}
+          <div style="font-size:13px;font-weight:700;color:var(--white)">${esc(u.chName)}</div>
+        </div>
+        <div style="font-size:11px;color:var(--muted)">${esc(u.action)}</div>
+        <div style="font-size:9px;color:var(--muted2);margin-top:3px">
+          <span style="color:${sj.color};font-weight:800">${esc(u.batch)}</span> · ${sj.label}${u.faculty ? " · " + esc(u.faculty) : ""} · ${fmtT(u.date)}
+        </div></div>`;
+        })
+        .join("")}
+    </div></div>`,
+          )
+          .join("");
+        return `<div class="vh"><div class="vt">🔔 Update Log</div><span style="font-size:10px;color:var(--muted)">${f.length} entries</span></div>
+    <div class="hscroll">${bpills}</div><div class="hscroll">${clspills}</div><div class="hscroll">${spills}</div>
+    ${f.length === 0 ? '<div class="empty">No updates yet.</div>' : html}`;
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // CLASS LOG — KEY FIX: chapter dropdown filtered by batch+cls+subject
+      // ═══════════════════════════════════════════════════════════════
+      let clsFac = "all",
+        clsBatch = "all",
+        clsShowForm = null,
+        clsExpanded = null;
+
+      function renderCls() {
+        if (!isAdmin()) clsFac = myFac();
+        const logs = DB.classLogs;
+        const bpills = ["all", ...BATCHES]
+          .map(
+            (b) =>
+              `<button class="pill ${clsBatch === b ? "on" : ""}" onclick="clsBatch='${esc(b)}';rerender()">${b === "all" ? "All" : esc(b)}</button>`,
+          )
+          .join("");
+        const facpills = isAdmin()
+          ? ["all", ...FACULTIES]
+              .map(
+                (f) =>
+                  `<button class="pill ${clsFac === f ? "on" : ""}" onclick="clsFac='${esc(f)}';rerender()">${f === "all" ? "All Faculty" : esc(f).split(" ").slice(0, 2).join(" ")}</button>`,
+              )
+              .join("")
+          : "";
+
+        let filtered = logs.filter((l) => {
+          if (clsBatch !== "all" && l.batch !== clsBatch) return false;
+          if (clsFac !== "all" && l.faculty !== clsFac) return false;
+          return true;
+        });
+        const byFac = {};
+        FACULTIES.forEach((f) => {
+          byFac[f] = [];
+        });
+        filtered.forEach((l) => {
+          if (byFac[l.faculty]) byFac[l.faculty].push(l);
+        });
+        const today = new Date().toISOString().slice(0, 10);
+        const thisMonth = new Date().toISOString().slice(0, 7);
+        const totalCls = filtered.length,
+          todayCls = filtered.filter((l) => l.date === today).length,
+          monthCls = filtered.filter(
+            (l) => l.date && l.date.startsWith(thisMonth),
+          ).length;
+
+        const facCards = FACULTIES.map((fac) => {
+          if (!isAdmin() && fac !== myFac()) return "";
+          if (isAdmin() && clsFac !== "all" && clsFac !== fac) return "";
+          const fl = byFac[fac] || [];
+          const sc = {
+            phy: "var(--phy-c)",
+            chem: "var(--chem-c)",
+            math: "var(--math-c)",
+            bio: "var(--bio-c)",
+            sst: "var(--sst-c)",
+            eng: "var(--eng-c)",
+          };
+          const fs = {
+            "Santosh Yadav Sir": "phy",
+            "Dr. Sowmya Madam": "chem",
+            "Khan Sir": "math",
+            "Nagarale Sir": "bio",
+            "Sandip Potdar Sir": "bio",
+            "Prafful Sir": "sst",
+            "Heena Madam": "eng",
+          };
+          const facSubj = fs[fac] || "phy";
+          const facColor = sc[facSubj] || "var(--gold2)";
+          const subjLbl = subjLabel(facSubj);
+          const todayL = fl.filter((l) => l.date === today).length;
+          const monthL = fl.filter(
+            (l) => l.date && l.date.startsWith(thisMonth),
+          ).length;
+          const isOpen = clsShowForm === fac,
+            isExp = clsExpanded === fac;
+          const fid = "f_" + fac.replace(/\W/g, "_");
+
+          // Log rows
+          const logRows = fl
+            .slice(0, 20)
+            .map(
+              (l) => `
+      <div class="log-entry">
+        <div class="log-top">
+          <div>
+            <div class="log-cn">${esc(l.chapter)}</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:1px">${esc(l.batch)}${l.cls ? " · Class " + esc(l.cls) : ""}</div>
+          </div>
+          <span class="log-db">${l.date || ""} ${l.time || ""}</span>
+        </div>
+        ${l.subtopics ? `<div style="margin-bottom:5px"><div class="log-fl">Subtopics Taught</div><div class="log-fv">${esc(l.subtopics)}</div></div>` : ""}
+        ${l.homework ? `<div style="margin-bottom:5px"><div class="log-fl">Homework / Module Q.No.</div><div class="log-hw">📝 ${esc(l.homework)}</div></div>` : ""}
+        ${l.remarks ? `<div style="margin-bottom:5px"><div class="log-fl">Remarks</div><div class="log-fv">${esc(l.remarks)}</div></div>` : ""}
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+          <span class="att-ok">✅ Present</span>
+          <button style="font-size:10px;color:var(--red);background:none;border:none;cursor:pointer;font-weight:800;font-family:inherit" onclick="delLog('${l.id}')">DELETE</button>
+        </div>
+      </div>`,
+            )
+            .join("");
+
+          // ── FORM: batch select triggers chapter dropdown update ──
+          const batchOpts = BATCHES.map(
+            (b) => `<option value="${esc(b)}">${esc(b)}</option>`,
+          ).join("");
+          const clsOpts = `<option value="">Not applicable</option><option value="XI">Class XI</option><option value="XII">Class XII</option>`;
+
+          const form = isOpen
+            ? `<div class="cl-form">
+      <div style="font-size:11px;font-weight:800;color:var(--gold2);margin-bottom:12px;letter-spacing:.04em">LOG CLASS — ${esc(fac)}</div>
+      <div class="frow" style="margin-bottom:2px">
+        <div><div class="ilbl">Batch *</div>
+          <select id="${fid}-batch" onchange="updateChDrop('${fid}','${esc(facSubj)}')" style="margin-bottom:9px">
+            <option value="">Select Batch</option>${batchOpts}
+          </select>
+        </div>
+        <div><div class="ilbl">Class (XI/XII)</div>
+          <select id="${fid}-cls" onchange="updateChDrop('${fid}','${esc(facSubj)}')" style="margin-bottom:9px">${clsOpts}</select>
+        </div>
+      </div>
+      <div class="ilbl">Chapter *</div>
+      <select id="${fid}-chapter" style="margin-bottom:9px"><option value="">— Select Batch first —</option></select>
+      <div class="ilbl">Subtopics Taught * <span style="font-size:9px;color:var(--muted);font-weight:500">(comma separated)</span></div>
+      <textarea id="${fid}-subtopics" rows="3" placeholder="e.g. Coulomb's law, Electric field intensity, Superposition principle..."></textarea>
+      <div class="ilbl">Homework / Module Q.No.</div>
+      <input type="text" id="${fid}-hw" placeholder="e.g. Module 4: Q.1–20, Q.22, Q.25">
+      <div class="ilbl">Remarks (optional)</div>
+      <input type="text" id="${fid}-remarks" placeholder="e.g. Revision needed on derivations">
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn-g" style="flex:2;padding:11px" onclick="saveClsLog('${esc(fac)}','${esc(facSubj)}','${fid}')">✅ Mark Present & Save</button>
+        <button class="btn-gh" style="flex:1;padding:11px" onclick="clsShowForm=null;rerender()">Cancel</button>
+      </div>
+    </div>`
+            : "";
+
+          return `<div class="fac-card">
+      <div class="fac-hdr" onclick="clsExpanded=clsExpanded==='${esc(fac)}'?null:'${esc(fac)}';rerender()">
+        <div>
+          <div class="fac-nm">${esc(fac)}</div>
+          <div class="fac-sj" style="color:${facColor}">${subjLbl}</div>
+          <div style="display:flex;gap:8px;margin-top:5px;flex-wrap:wrap">
+            ${todayL ? `<span class="att-ok" style="font-size:8px">Today: ${todayL} class${todayL > 1 ? "es" : ""}</span>` : ""}
+            ${monthL ? `<span style="font-size:9px;color:var(--muted)">Month: ${monthL}</span>` : ""}
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:22px;font-weight:900;color:var(--gold2)">${fl.length}</div>
+          <div style="font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Classes</div>
+          <button class="btn-g" style="margin-top:8px;padding:6px 12px;font-size:10px" onclick="event.stopPropagation();clsShowForm=clsShowForm==='${esc(fac)}'?null:'${esc(fac)}';clsExpanded='${esc(fac)}';rerender()">
+            ${isOpen ? "✕ Close" : "+ Log Class"}
+          </button>
+        </div>
+      </div>
+      ${form}
+      ${isExp && fl.length ? logRows : ""}
+      ${isExp && !fl.length ? `<div style="padding:14px;color:var(--muted);font-size:12px">No classes logged yet.</div>` : ""}
+    </div>`;
+        }).join("");
+
+        return `<div class="vh"><div class="vt">🎓 Class Log</div><span style="font-size:10px;color:var(--muted)">${totalCls} total</span></div>
+    <div class="sg" style="grid-template-columns:repeat(3,1fr)">
+      <div class="sc"><div class="sv">${totalCls}</div><div class="sl">Total</div></div>
+      <div class="sc"><div class="sv" style="color:var(--c-done-t)">${todayCls}</div><div class="sl">Today</div></div>
+      <div class="sc"><div class="sv" style="color:var(--gold2)">${monthCls}</div><div class="sl">Month</div></div>
+    </div>
+    <div class="hscroll">${bpills}</div>
+    ${isAdmin() ? `<div class="hscroll">${facpills}</div>` : ""}
+    ${facCards}`;
+      }
+
+      // ── KEY FIX: update chapter dropdown based on batch + cls + subject ──
+      function updateChDrop(fid, facSubj) {
+        const batchEl = document.getElementById(fid + "-batch");
+        const clsEl = document.getElementById(fid + "-cls");
+        const chEl = document.getElementById(fid + "-chapter");
+        if (!batchEl || !chEl) return;
+        const batch = batchEl.value;
+        const cls = clsEl?.value || "";
+        const chapters = chaptersFor(batch, cls, facSubj);
+        if (!chapters.length) {
+          chEl.innerHTML =
+            '<option value="">No chapters for this batch/class</option>';
+          return;
+        }
+        chEl.innerHTML =
+          '<option value="">Select Chapter</option>' +
+          chapters
+            .map((n) => `<option value="${esc(n)}">${esc(n)}</option>`)
+            .join("");
+      }
+
+      function saveClsLog(fac, subj, fid) {
+        const batch = document.getElementById(fid + "-batch")?.value || "";
+        const cls = document.getElementById(fid + "-cls")?.value || "";
+        const chapter = document.getElementById(fid + "-chapter")?.value || "";
+        const subtopics =
+          document.getElementById(fid + "-subtopics")?.value.trim() || "";
+        const hw = document.getElementById(fid + "-hw")?.value.trim() || "";
+        const remarks =
+          document.getElementById(fid + "-remarks")?.value.trim() || "";
+        if (!batch || !chapter || !subtopics) {
+          toast("Fill batch, chapter & subtopics");
+          return;
+        }
+        const now = new Date();
+        const entry = {
+          id: uid(),
+          faculty: fac,
+          subject: subj,
+          batch,
+          cls,
+          chapter,
+          subtopics,
+          homework: hw,
+          remarks,
+          date: now.toISOString().slice(0, 10),
+          time: now.toLocaleTimeString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          createdAt: now.toISOString(),
+        };
+        DB.classLogs.unshift(entry);
+        persistCls();
+        // Auto-mark chapter in-progress if not started
+        const ch = DB.chapters.find(
+          (c) =>
+            c.batch === batch &&
+            (cls ? c.cls === cls : true) &&
+            c.subject === subj &&
+            c.name === chapter,
+        );
+        if (ch && ch.status === "not-started") {
+          ch.status = "in-progress";
+          ch.updatedAt = now.toISOString();
+          if (!ch.startDate) ch.startDate = now.toISOString().slice(0, 10);
+          persistCh();
+        }
+        clsShowForm = null;
+        clsExpanded = fac;
+        toast("Class logged ✅");
+        rerender();
+      }
+
+      function delLog(id) {
+        if (!confirm("Delete this class log?")) return;
+        DB.classLogs = DB.classLogs.filter((l) => l.id !== id);
+        persistCls();
+        toast("Deleted");
+        rerender();
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // SETTINGS / SYNC
+      // ═══════════════════════════════════════════════════════════════
+      let GAS_URL = localStorage.getItem(SK.url) || "";
+      function renderSet() {
+        const conn = !!GAS_URL;
+        const last = localStorage.getItem("ra-last-sync") || "Never";
+        return `<div class="vh"><div class="vt">⚙️ Google Sync</div></div>
+    <div class="fcard" style="border-color:${conn ? "var(--c-done-b)" : "var(--border)"}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div style="width:10px;height:10px;border-radius:50%;background:${conn ? "var(--c-done-t)" : "var(--muted2)"}"></div>
+        <div style="font-size:13px;font-weight:800;color:${conn ? "var(--c-done-t)" : "var(--muted)"}">${conn ? "Connected" : "Not Connected"}</div>
+      </div>
+      <div class="ilbl">Apps Script Web App URL</div>
+      <input type="text" id="gurl" placeholder="https://script.google.com/macros/s/..." value="${esc(GAS_URL)}" style="font-size:11px">
+      <button class="btn-g" style="width:100%;padding:11px;margin-bottom:8px" onclick="saveUrl()">Save URL</button>
+      ${conn ? `<div style="font-size:10px;color:var(--muted);text-align:center">Last sync: ${last}</div>` : ""}
+    </div>
+    ${
+      conn
+        ? `<div class="fcard">
+      <div class="ftitle">Sync Actions</div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <button class="btn-g" style="width:100%;padding:12px" onclick="doSync('syncAll')">☁️ Push All Data to Google Sheets</button>
+        <button class="btn-gh" style="width:100%;padding:12px" onclick="doSync('loadAll')">⬇️ Pull Data from Google Sheets</button>
+        <button class="btn-gh" style="width:100%;padding:12px" onclick="doSync('syncClassLogs')">🎓 Sync Class Logs + Attendance</button>
+      </div>
+      <div id="sync-st" style="margin-top:12px;font-size:11px;color:var(--muted);text-align:center;min-height:18px"></div>
+    </div>`
+        : ""
+    }
+    <div class="fcard" style="background:#000;border-color:var(--golddim)">
+      <div class="ftitle" style="color:var(--gold2)">📋 Setup Instructions</div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.9">
+        <b style="color:var(--white)">1.</b> Open Google Sheets → New Sheet<br>
+        <b style="color:var(--white)">2.</b> Extensions → Apps Script<br>
+        <b style="color:var(--white)">3.</b> Paste the <b style="color:var(--gold2)">GoogleAppsScript.js</b> code<br>
+        <b style="color:var(--white)">4.</b> Deploy → New Deployment → Web App<br>
+        <b style="color:var(--white)">5.</b> Execute as: <b style="color:var(--gold2)">Me</b> · Access: <b style="color:var(--gold2)">Anyone</b><br>
+        <b style="color:var(--white)">6.</b> Copy Web App URL → paste above<br><br>
+        <span style="color:var(--gold2)">4 auto-created tabs in Google Sheets:</span><br>
+        📗 Chapters · 🎓 ClassLog · ✅ FacultyAttendance · 🔔 UpdateLog
+      </div>
+    </div>`;
+      }
+      function saveUrl() {
+        GAS_URL = document.getElementById("gurl")?.value.trim() || "";
+        localStorage.setItem(SK.url, GAS_URL);
+        toast(GAS_URL ? "URL Saved ✓" : "URL Cleared");
+        rerender();
+      }
+      async function doSync(action) {
+        if (!GAS_URL) {
+          toast("Set URL first");
+          return;
+        }
+        const st = document.getElementById("sync-st");
+        if (st) st.textContent = "Syncing...";
+        try {
+          let res, data;
+          if (action === "loadAll") {
+            res = await fetch(GAS_URL + "?action=loadAll");
+          } else {
+            res = await fetch(GAS_URL, {
+              method: "POST",
+              body: JSON.stringify({
+                action,
+                chapters: DB.chapters,
+                log: DB.log,
+                classLogs: DB.classLogs,
+              }),
+            });
+          }
+          data = await res.json();
+          if (data.error) throw new Error(data.error);
+          if (action === "loadAll") {
+            if (data.chapters?.length) {
+              DB.chapters = data.chapters;
+              persistCh();
+            }
+            if (data.classLogs?.length) {
+              DB.classLogs = data.classLogs;
+              persistCls();
+            }
+            if (data.log?.length) {
+              DB.log = data.log;
+              persistLog();
+            }
+            if (st)
+              st.textContent =
+                "✅ Loaded " +
+                DB.chapters.length +
+                " chapters, " +
+                DB.classLogs.length +
+                " class logs";
+          } else {
+            const now = new Date().toLocaleString("en-IN");
+            localStorage.setItem("ra-last-sync", now);
+            if (st) st.textContent = "✅ Synced successfully · " + now;
+          }
+          toast("Done ✅");
+        } catch (e) {
+          if (st) st.textContent = "❌ " + e.message;
+          toast("Failed");
+        }
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // INIT
+      // ═══════════════════════════════════════════════════════════════
+      initAuth();
+    </script>
+  </body>
+</html>
